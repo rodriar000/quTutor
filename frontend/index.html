@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Codex Quantum Tutor</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 40px; }
+        textarea { width: 80%; height: 120px; }
+        pre { background: #f0f0f0; padding: 1em; text-align: left; white-space: pre-wrap; font-family: monospace; }
+        .section-title { font-weight: bold; margin-top: 1em; }
+        button { margin-top: 10px; }
+        #error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Codex Quantum Tutor</h1>
+    <textarea id="prompt" placeholder="Escribe tu prompt aquí..."></textarea><br>
+    <button id="generate">Generar código</button>
+    <div id="error"></div>
+    <div class="section-title" id="code-title" style="display:none;">Código generado</div>
+    <pre id="result"></pre>
+    <div class="section-title" id="explanation-title" style="display:none;">Explicación del código</div>
+    <pre id="explanation"></pre>
+
+    <script>
+    document.getElementById('generate').addEventListener('click', async () => {
+        const prompt = document.getElementById('prompt').value;
+        const resultEl = document.getElementById('result');
+        const explanationEl = document.getElementById('explanation');
+        const codeTitle = document.getElementById('code-title');
+        const explanationTitle = document.getElementById('explanation-title');
+        const errorEl = document.getElementById('error');
+        resultEl.textContent = '';
+        explanationEl.textContent = '';
+        codeTitle.style.display = 'none';
+        explanationTitle.style.display = 'none';
+        errorEl.textContent = '';
+        try {
+            const resp = await fetch('http://localhost:8000/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+            if (!resp.ok) {
+                throw new Error('Error ' + resp.status);
+            }
+            const data = await resp.json();
+            resultEl.textContent = data.code;
+            explanationEl.textContent = data.explanation;
+            codeTitle.style.display = 'block';
+            explanationTitle.style.display = 'block';
+        } catch (err) {
+            errorEl.textContent = 'Ocurrió un error: ' + err.message;
+        }
+    });
+    </script>
+</body>
+</html>
