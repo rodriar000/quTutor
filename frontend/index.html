@@ -7,10 +7,7 @@
         body { font-family: Arial, sans-serif; text-align: center; padding: 40px; }
         textarea { width: 80%; height: 120px; }
         pre { background: #f0f0f0; padding: 1em; text-align: left; white-space: pre-wrap; font-family: monospace; }
- j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
         .section-title { font-weight: bold; margin-top: 1em; }
-
- main
         button { margin-top: 10px; }
         #error { color: red; }
     </style>
@@ -25,35 +22,35 @@
         <option value="advanced">Advanced</option>
     </select>
     <button id="generate">Generar código</button>
+    <button id="sanitize">Sanitizar</button>
     <div id="error"></div>
- j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
     <div class="section-title" id="code-title" style="display:none;">Código generado</div>
     <pre id="result"></pre>
     <div class="section-title" id="explanation-title" style="display:none;">Explicación del código</div>
     <pre id="explanation"></pre>
 
-    <pre id="result"></pre>
- main
-
     <script>
+    function extraSanitize(text) {
+        return text
+            .replace(/<<<<<|>>>>>/g, '')
+            .replace(/=====+/g, '');
+    }
+
     document.getElementById('generate').addEventListener('click', async () => {
         const prompt = document.getElementById('prompt').value;
         const level = document.getElementById('level').value;
         const resultEl = document.getElementById('result');
- j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
         const explanationEl = document.getElementById('explanation');
         const codeTitle = document.getElementById('code-title');
         const explanationTitle = document.getElementById('explanation-title');
         const errorEl = document.getElementById('error');
+
         resultEl.textContent = '';
         explanationEl.textContent = '';
         codeTitle.style.display = 'none';
         explanationTitle.style.display = 'none';
-
-        const errorEl = document.getElementById('error');
-        resultEl.textContent = '';
- main
         errorEl.textContent = '';
+
         try {
             const resp = await fetch('http://localhost:8000/generate', {
                 method: 'POST',
@@ -65,15 +62,19 @@
             }
             const data = await resp.json();
             resultEl.textContent = data.code;
- j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
             explanationEl.textContent = data.explanation;
             codeTitle.style.display = 'block';
             explanationTitle.style.display = 'block';
-
- main
         } catch (err) {
             errorEl.textContent = 'Ocurrió un error: ' + err.message;
         }
+    });
+
+    document.getElementById('sanitize').addEventListener('click', () => {
+        const resultEl = document.getElementById('result');
+        const explanationEl = document.getElementById('explanation');
+        resultEl.textContent = extraSanitize(resultEl.textContent);
+        explanationEl.textContent = extraSanitize(explanationEl.textContent);
     });
     </script>
 </body>
