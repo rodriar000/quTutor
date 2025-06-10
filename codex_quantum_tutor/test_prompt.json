@@ -1,3 +1,4 @@
 {
-  "prompt": "Escribe un circuito en Qiskit que cree un estado de Bell y mide los qubits"
+  "prompt": "Escribe un circuito en Qiskit que cree un estado de Bell y mide los qubits",
+  "level": "beginner"
 }
