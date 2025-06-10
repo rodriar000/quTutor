@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Codex Quantum Tutor</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 40px; }
+        textarea { width: 80%; height: 120px; }
+        pre { background: #f0f0f0; padding: 1em; text-align: left; white-space: pre-wrap; font-family: monospace; }
+        button { margin-top: 10px; }
+        #error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Codex Quantum Tutor</h1>
+    <textarea id="prompt" placeholder="Escribe tu prompt aquí..."></textarea><br>
+    <button id="generate">Generar código</button>
+    <div id="error"></div>
+    <pre id="result"></pre>
+
+    <script>
+    document.getElementById('generate').addEventListener('click', async () => {
+        const prompt = document.getElementById('prompt').value;
+        const resultEl = document.getElementById('result');
+        const errorEl = document.getElementById('error');
+        resultEl.textContent = '';
+        errorEl.textContent = '';
+        try {
+            const resp = await fetch('http://localhost:8000/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+            if (!resp.ok) {
+                throw new Error('Error ' + resp.status);
+            }
+            const data = await resp.json();
+            resultEl.textContent = data.code;
+        } catch (err) {
+            errorEl.textContent = 'Ocurrió un error: ' + err.message;
+        }
+    });
+    </script>
+</body>
+</html>
