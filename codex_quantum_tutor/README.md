@@ -31,8 +31,10 @@ curl -X POST http://localhost:8000/generate \
   -H "Content-Type: application/json" \
   -d @test_prompt.json
 ```
+ kczlam-codex/crear-proyecto-python-con-fastapi-y-codex
 
 ## Interfaz web
 
 Con el backend en marcha puedes abrir `frontend/index.html` en tu navegador.
 Allí podrás introducir un prompt y ver el código generado directamente.
+main

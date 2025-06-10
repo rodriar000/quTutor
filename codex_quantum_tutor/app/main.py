@@ -1,5 +1,8 @@
 from fastapi import FastAPI, HTTPException
+ kczlam-codex/crear-proyecto-python-con-fastapi-y-codex
 from fastapi.middleware.cors import CORSMiddleware
+
+main
 from pydantic import BaseModel
 import openai
 from dotenv import load_dotenv
@@ -15,6 +18,7 @@ openai.api_key = api_key
 
 app = FastAPI(title="Codex Quantum Tutor")
 
+ kczlam-codex/crear-proyecto-python-con-fastapi-y-codex
 # Allow requests from any origin so the HTML file can be opened locally
 app.add_middleware(
     CORSMiddleware,
@@ -23,6 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+ main
 class Prompt(BaseModel):
     prompt: str
 
