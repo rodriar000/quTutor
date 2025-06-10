@@ -1,21 +1,11 @@
 from fastapi import FastAPI, HTTPException
- feature/Respuesta-explicativa
 from fastapi.middleware.cors import CORSMiddleware
-
- j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
-from fastapi.middleware.cors import CORSMiddleware
-
- kczlam-codex/crear-proyecto-python-con-fastapi-y-codex
-from fastapi.middleware.cors import CORSMiddleware
-
-main
- main
- main
 from pydantic import BaseModel
 from typing import Literal
 import openai
 from dotenv import load_dotenv
 import os
+import html
 
 load_dotenv()
 
@@ -26,15 +16,6 @@ if not api_key:
 openai.api_key = api_key
 
 app = FastAPI(title="Codex Quantum Tutor")
-
- feature/Respuesta-explicativa
-
-j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
-
- kczlam-codex/crear-proyecto-python-con-fastapi-y-codex
- main
- main
-# Allow requests from any origin so the HTML file can be opened locally
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -42,34 +23,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
- feature/Respuesta-explicativa
 LEVEL_MSG = {
     "beginner": "Responde con explicaciones sencillas y paso a paso.",
     "intermediate": "Asume conocimientos básicos de computación cuántica.",
     "advanced": "Utiliza terminología técnica y da detalles avanzados.",
 }
 
-
- j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
-
- main
-  main
- main
 class Prompt(BaseModel):
     prompt: str
     level: Literal["beginner", "intermediate", "advanced"] = "beginner"
 
+def sanitize_text(text: str) -> str:
+    lines = []
+    for line in text.splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith("<<<<<<<") or stripped.startswith(">>>>>>>"):
+            lines.append("# Línea conflictiva filtrada")
+        else:
+            lines.append(line)
+    sanitized = "\n".join(lines)
+    sanitized = sanitized.replace("<<<<<", "&lt;&lt;&lt;&lt;&lt;")
+    sanitized = sanitized.replace(">>>>>", "&gt;&gt;&gt;&gt;&gt;")
+    return sanitized
+
 @app.post("/generate")
 async def generate_code(data: Prompt):
     try:
- feature/Respuesta-explicativa
         instruction = LEVEL_MSG.get(data.level, "")
-
- j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
-
- main
-        # Try GPT-4 via chat completion
- main
         try:
             chat_resp = openai.ChatCompletion.create(
                 model="gpt-4",
@@ -80,11 +60,7 @@ async def generate_code(data: Prompt):
                 max_tokens=400,
                 temperature=0.3,
             )
- j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
             code_text = chat_resp.choices[0].message.content.strip()
-
-            text = chat_resp.choices[0].message.content
- main
         except Exception:
             resp = openai.Completion.create(
                 model="code-davinci-002",
@@ -92,7 +68,6 @@ async def generate_code(data: Prompt):
                 max_tokens=400,
                 temperature=0.3,
             )
- j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
             code_text = resp.choices[0].text.strip()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating code: {e}")
@@ -121,14 +96,8 @@ async def generate_code(data: Prompt):
             )
             explanation_text = resp.choices[0].text.strip()
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error generating explanation: {e}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error generating explanation: {e}")
 
-    return {"code": code_text, "explanation": explanation_text}
-
-            text = resp.choices[0].text
-        return {"code": text.strip()}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
- main
+    sanitized_code = html.escape(sanitize_text(code_text))
+    sanitized_explanation = html.escape(sanitize_text(explanation_text))
+    return {"code": sanitized_code, "explanation": sanitized_explanation}
