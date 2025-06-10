@@ -1,9 +1,7 @@
 from fastapi import FastAPI, HTTPException
- kczlam-codex/crear-proyecto-python-con-fastapi-y-codex
 from fastapi.middleware.cors import CORSMiddleware
-
-main
 from pydantic import BaseModel
+from typing import Literal
 import openai
 from dotenv import load_dotenv
 import os
@@ -18,7 +16,6 @@ openai.api_key = api_key
 
 app = FastAPI(title="Codex Quantum Tutor")
 
- kczlam-codex/crear-proyecto-python-con-fastapi-y-codex
 # Allow requests from any origin so the HTML file can be opened locally
 app.add_middleware(
     CORSMiddleware,
@@ -27,18 +24,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
- main
+LEVEL_MSG = {
+    "beginner": "Responde con explicaciones sencillas y paso a paso.",
+    "intermediate": "Asume conocimientos básicos de computación cuántica.",
+    "advanced": "Utiliza terminología técnica y da detalles avanzados.",
+}
+
 class Prompt(BaseModel):
     prompt: str
+    level: Literal["beginner", "intermediate", "advanced"] = "beginner"
 
 @app.post("/generate")
 async def generate_code(data: Prompt):
     try:
+        instruction = LEVEL_MSG.get(data.level, "")
         # Try GPT-4 via chat completion
         try:
             chat_resp = openai.ChatCompletion.create(
                 model="gpt-4",
-                messages=[{"role": "user", "content": data.prompt}],
+                messages=[
+                    {"role": "system", "content": instruction},
+                    {"role": "user", "content": data.prompt},
+                ],
                 max_tokens=400,
                 temperature=0.3,
             )
@@ -46,7 +53,7 @@ async def generate_code(data: Prompt):
         except Exception:
             resp = openai.Completion.create(
                 model="code-davinci-002",
-                prompt=data.prompt,
+                prompt=f"{instruction}\n{data.prompt}",
                 max_tokens=400,
                 temperature=0.3,
             )

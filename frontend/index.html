@@ -14,6 +14,12 @@
 <body>
     <h1>Codex Quantum Tutor</h1>
     <textarea id="prompt" placeholder="Escribe tu prompt aquí..."></textarea><br>
+    <label for="level">Nivel:</label>
+    <select id="level">
+        <option value="beginner">Beginner</option>
+        <option value="intermediate">Intermediate</option>
+        <option value="advanced">Advanced</option>
+    </select>
     <button id="generate">Generar código</button>
     <div id="error"></div>
     <pre id="result"></pre>
@@ -21,6 +27,7 @@
     <script>
     document.getElementById('generate').addEventListener('click', async () => {
         const prompt = document.getElementById('prompt').value;
+        const level = document.getElementById('level').value;
         const resultEl = document.getElementById('result');
         const errorEl = document.getElementById('error');
         resultEl.textContent = '';
@@ -29,7 +36,7 @@
             const resp = await fetch('http://localhost:8000/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt })
+                body: JSON.stringify({ prompt, level })
             });
             if (!resp.ok) {
                 throw new Error('Error ' + resp.status);
