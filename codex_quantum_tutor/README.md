@@ -23,6 +23,9 @@ uvicorn app.main:app --reload
 ```
 
 Enviar un POST a `/generate` con un JSON que contenga el campo `prompt`.
+ j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
+La respuesta incluirá el código generado y una explicación línea por línea.
+ main
 
 Ejemplo usando `curl`:
 
@@ -31,10 +34,17 @@ curl -X POST http://localhost:8000/generate \
   -H "Content-Type: application/json" \
   -d @test_prompt.json
 ```
+ j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
+
  kczlam-codex/crear-proyecto-python-con-fastapi-y-codex
+ main
 
 ## Interfaz web
 
 Con el backend en marcha puedes abrir `frontend/index.html` en tu navegador.
+ j3ihug-codex/crear-proyecto-python-con-fastapi-y-codex
+Allí podrás introducir un prompt y ver el código generado junto con su explicación.
+
 Allí podrás introducir un prompt y ver el código generado directamente.
+main
 main
